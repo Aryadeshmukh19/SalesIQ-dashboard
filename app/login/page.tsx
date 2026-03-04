@@ -38,12 +38,16 @@ export default function LoginPage() {
         setError('')
         setGLoading(true)
         try {
-            await signInWithGoogle()
-            router.replace('/')
+            const result = await signInWithGoogle()
+            // On mobile signInWithGoogle returns void (redirect) — result will be null/undefined.
+            // The redirect result is handled in AuthContext when the page reloads.
+            if (result) {
+                router.replace('/')
+            }
+            // If mobile redirect: page navigates away — no further action needed here.
         } catch (err: unknown) {
             const msg = err instanceof Error ? err.message : 'Google sign-in failed'
             setError(friendlyError(msg))
-        } finally {
             setGLoading(false)
         }
     }

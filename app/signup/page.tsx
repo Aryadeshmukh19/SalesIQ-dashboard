@@ -47,12 +47,15 @@ export default function SignupPage() {
         setError('')
         setGLoading(true)
         try {
-            await signInWithGoogle()
-            router.replace('/')
+            const result = await signInWithGoogle()
+            // On mobile (redirect flow) result is void — page will reload after Google auth.
+            // AuthContext picks up the session on reload.
+            if (result) {
+                router.replace('/')
+            }
         } catch (err: unknown) {
             const msg = err instanceof Error ? err.message : 'Google sign-in failed'
             setError(friendlyError(msg))
-        } finally {
             setGLoading(false)
         }
     }

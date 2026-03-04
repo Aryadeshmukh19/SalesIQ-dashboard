@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import type { User } from 'firebase/auth'
-import { onAuthStateChange } from '@/lib/firebase/auth'
+import { onAuthStateChange, getGoogleRedirectResult } from '@/lib/firebase/auth'
 
 interface AuthContextValue {
     user: User | null
@@ -16,6 +16,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
+        // Handle the result of a Google redirect sign-in (mobile flow)
+        getGoogleRedirectResult().catch(() => {
+            // Not a redirect sign-in, or already handled — silently ignore
+        })
+
         const unsubscribe = onAuthStateChange((firebaseUser) => {
             setUser(firebaseUser)
             setLoading(false)
@@ -33,3 +38,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export function useAuth() {
     return useContext(AuthContext)
 }
+
