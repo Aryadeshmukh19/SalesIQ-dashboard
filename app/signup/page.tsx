@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/context/AuthContext'
 import Link from 'next/link'
 import { signUpWithEmail, signInWithGoogle } from '@/lib/firebase/auth'
 import { Button } from '@/components/ui/button'
@@ -13,12 +14,20 @@ import { BarChart3, Loader2, Chrome } from 'lucide-react'
 
 export default function SignupPage() {
     const router = useRouter()
+    const { user, loading: authLoading } = useAuth()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirm, setConfirm] = useState('')
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
     const [gLoading, setGLoading] = useState(false)
+
+    // Auto-redirect if already logged in (essential for mobile redirect flow)
+    useEffect(() => {
+        if (!authLoading && user) {
+            router.replace('/')
+        }
+    }, [user, authLoading, router])
 
     async function handleEmailSignup(e: React.FormEvent) {
         e.preventDefault()
