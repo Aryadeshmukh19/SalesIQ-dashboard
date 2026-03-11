@@ -16,6 +16,7 @@ import { REVENUE_COLOR, PROFIT_COLOR } from '@/lib/chart-colors'
 import type { SaleRecord } from '@/lib/types'
 import { Badge } from '@/components/ui/badge'
 import { Users, Trophy } from 'lucide-react'
+import { EmptyState } from '@/components/empty-state'
 
 interface RepsTabProps {
   data: SaleRecord[]
@@ -47,50 +48,62 @@ export function RepsTab({ data, currency = '$' }: RepsTabProps) {
 
   if (data.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted">
-          <Users className="h-8 w-8 text-muted-foreground" />
-        </div>
-        <h3 className="font-serif text-xl text-foreground">No rep data yet</h3>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Add sales to see rep performance.
-        </p>
-      </div>
+      <EmptyState
+        icon={Users}
+        title="No rep data yet"
+        description="Add sales to see performance metrics for your sales representatives."
+      />
     )
   }
 
   return (
     <div className="flex flex-col gap-6">
       {/* Grouped bar chart */}
-      <div className="animate-fade-up rounded-2xl border border-border bg-card p-6 shadow-sm">
-        <h3 className="mb-4 font-serif text-lg text-card-foreground">
-          Revenue vs Profit by Rep
-        </h3>
+      <div className="animate-fade-up glass-card p-6 shadow-sm">
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h3 className="font-serif text-lg font-bold text-card-foreground">
+              Executive Performance Index
+            </h3>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-0.5">Revenue Generation vs Profitability</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-primary/5">
+              <div className="h-2 w-2 rounded-full bg-primary" />
+              <span className="text-[10px] font-bold uppercase tracking-tight text-primary">Revenue</span>
+            </div>
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-emerald-500/5">
+              <div className="h-2 w-2 rounded-full bg-emerald-500" />
+              <span className="text-[10px] font-bold uppercase tracking-tight text-emerald-600">Profit</span>
+            </div>
+          </div>
+        </div>
         <ResponsiveContainer width="100%" height={350}>
-          <BarChart data={repData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e2dc" />
+          <BarChart data={repData} margin={{ top: 10, right: 10, left: -10, bottom: 20 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" vertical={false} />
             <XAxis
               dataKey="name"
-              tick={{ fontSize: 11, fill: '#6b7280' }}
+              tick={{ fontSize: 10, fontWeight: 700, fill: '#64748b' }}
+              axisLine={false}
+              tickLine={false}
               interval={0}
-              angle={-15}
+              angle={-20}
               textAnchor="end"
             />
-            <YAxis
-              tick={{ fontSize: 12, fill: '#6b7280' }}
-              tickFormatter={(v) => formatCurrency(v, currency)}
-            />
+            <YAxis hide />
             <Tooltip
               formatter={(value: number) => formatCurrencyFull(value, currency)}
+              cursor={{ fill: 'rgba(0,0,0,0.02)' }}
               contentStyle={{
-                borderRadius: '8px',
-                border: '1px solid #e5e2dc',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+                backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                backdropFilter: 'blur(12px)',
+                borderRadius: '12px',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
               }}
             />
-            <Legend />
-            <Bar dataKey="revenue" name="Revenue" fill={REVENUE_COLOR} radius={[4, 4, 0, 0]} />
-            <Bar dataKey="profit" name="Profit" fill={PROFIT_COLOR} radius={[4, 4, 0, 0]} />
+            <Bar dataKey="revenue" name="Revenue" fill="var(--primary)" radius={[6, 6, 0, 0]} barSize={24} />
+            <Bar dataKey="profit" name="Profit" fill="#10b981" radius={[6, 6, 0, 0]} barSize={24} />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -100,41 +113,63 @@ export function RepsTab({ data, currency = '$' }: RepsTabProps) {
         {repData.map((rep) => (
           <div
             key={rep.name}
-            className="animate-fade-up-delay-1 rounded-2xl border border-border bg-card p-5 shadow-sm"
+            className="animate-fade-up glass-card group p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
           >
-            <div className="mb-3 flex items-center justify-between">
-              <h4 className="font-medium text-card-foreground">{rep.name}</h4>
+            <div className="mb-5 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                  <Users className="h-5 w-5" />
+                </div>
+                <div>
+                  <h4 className="font-serif text-lg font-bold text-card-foreground">{rep.name}</h4>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Executive Agent</p>
+                </div>
+              </div>
               {rep.name === topRepName && (
-                <Badge className="gap-1 border-none bg-warning/15 text-warning">
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-[10px] font-bold text-amber-600 uppercase tracking-widest border border-amber-500/20">
                   <Trophy className="h-3 w-3" />
-                  TOP
-                </Badge>
+                  Elite
+                </div>
               )}
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <p className="text-xs text-muted-foreground">Revenue</p>
-                <p className="text-sm font-semibold text-card-foreground">
+
+            <div className="grid grid-cols-2 gap-y-5 gap-x-2">
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Gross Intake</p>
+                <p className="text-base font-bold text-card-foreground">
                   {formatCurrency(rep.revenue, currency)}
                 </p>
               </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Profit</p>
-                <p className="text-sm font-semibold text-success">
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Net Yield</p>
+                <p className="text-base font-bold text-emerald-600">
                   {formatCurrency(rep.profit, currency)}
                 </p>
               </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Units</p>
-                <p className="text-sm font-semibold text-card-foreground">
-                  {rep.units.toLocaleString()}
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Unit Volume</p>
+                <p className="text-base font-semibold text-card-foreground">
+                  {rep.units.toLocaleString()} <span className="text-[10px] font-medium text-muted-foreground">Units</span>
                 </p>
               </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Margin</p>
-                <p className="text-sm font-semibold text-card-foreground">
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Efficiency</p>
+                <p className="text-base font-semibold text-card-foreground">
                   {formatPercent(rep.margin)}
                 </p>
+              </div>
+            </div>
+
+            <div className="mt-6 flex flex-col gap-1.5">
+              <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40">
+                <span>Performance Delta</span>
+                <span>{Math.round(rep.margin)}%</span>
+              </div>
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted/30">
+                <div
+                  className="h-full rounded-full bg-primary/60 transition-all duration-1000 group-hover:bg-primary"
+                  style={{ width: `${Math.max(5, rep.margin)}%` }}
+                />
               </div>
             </div>
           </div>

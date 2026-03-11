@@ -16,10 +16,11 @@ import {
   Bar,
 } from 'recharts'
 import { formatCurrency, formatCurrencyFull } from '@/lib/format'
-import { CHART_COLORS, REVENUE_COLOR, PROFIT_COLOR } from '@/lib/chart-colors'
+import { CHART_COLORS, REVENUE_COLOR, PROFIT_COLOR, UNITS_COLOR } from '@/lib/chart-colors'
 import { months } from '@/lib/industry-templates'
 import type { SaleRecord } from '@/lib/types'
-import { TrendingUp, Star, MapPin, User } from 'lucide-react'
+import { TrendingUp, Star, MapPin, User, BarChart3 } from 'lucide-react'
+import { EmptyState } from '@/components/empty-state'
 
 interface OverviewTabProps {
   data: SaleRecord[]
@@ -29,20 +30,24 @@ interface OverviewTabProps {
 function ChartTooltipContent({ active, payload, label, currency = '$' }: { active?: boolean; payload?: Array<{ name: string; value: number; color: string }>; label?: string; currency?: string }) {
   if (!active || !payload?.length) return null
   return (
-    <div className="rounded-lg border border-border bg-card p-3 shadow-md">
-      <p className="mb-1 text-sm font-medium text-card-foreground">{label}</p>
-      {payload.map((entry) => (
-        <div key={entry.name} className="flex items-center gap-2 text-sm">
-          <span
-            className="h-2.5 w-2.5 rounded-full"
-            style={{ backgroundColor: entry.color }}
-          />
-          <span className="text-muted-foreground">{entry.name}:</span>
-          <span className="font-medium text-card-foreground">
-            {formatCurrencyFull(entry.value, currency)}
-          </span>
-        </div>
-      ))}
+    <div className="glass-card border-none p-3 shadow-xl backdrop-blur-md">
+      <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
+      <div className="space-y-1.5">
+        {payload.map((entry) => (
+          <div key={entry.name} className="flex items-center justify-between gap-4 text-sm">
+            <div className="flex items-center gap-2">
+              <span
+                className="h-2 w-2 rounded-full ring-2 ring-white/20"
+                style={{ backgroundColor: entry.color }}
+              />
+              <span className="text-muted-foreground">{entry.name}</span>
+            </div>
+            <span className="font-bold text-card-foreground">
+              {formatCurrencyFull(entry.value, currency)}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
@@ -113,56 +118,83 @@ export function OverviewTab({ data, currency = '$' }: OverviewTabProps) {
 
   if (data.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted">
-          <TrendingUp className="h-8 w-8 text-muted-foreground" />
-        </div>
-        <h3 className="font-serif text-xl text-foreground">No sales data yet</h3>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Add your first sale to see the overview.
-        </p>
-      </div>
+      <EmptyState
+        icon={BarChart3}
+        title="No sales data yet"
+        description="Connect your sales data or add your first record manually to see the overview."
+      />
     )
   }
 
   return (
     <div className="flex flex-col gap-6">
       {/* Revenue vs Profit area chart */}
-      <div className="animate-fade-up rounded-2xl border border-border bg-card p-6 shadow-sm">
-        <h3 className="mb-4 font-serif text-lg text-card-foreground">
-          Monthly Revenue vs Profit
-        </h3>
-        <ResponsiveContainer width="100%" height={300}>
+      <div className="animate-fade-up glass-card p-6 shadow-sm">
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h3 className="font-serif text-lg font-bold text-card-foreground">
+              Performance Overview
+            </h3>
+            <p className="text-xs text-muted-foreground uppercase tracking-widest mt-0.5">Monthly Revenue vs Profit</p>
+          </div>
+          <div className="flex gap-4">
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full" style={{ backgroundColor: REVENUE_COLOR }} />
+              <span className="text-xs font-medium text-muted-foreground uppercase">Revenue</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full" style={{ backgroundColor: PROFIT_COLOR }} />
+              <span className="text-xs font-medium text-muted-foreground uppercase">Profit</span>
+            </div>
+          </div>
+        </div>
+        <ResponsiveContainer width="100%" height={320}>
           <AreaChart data={monthlyData}>
             <defs>
               <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={REVENUE_COLOR} stopOpacity={0.15} />
+                <stop offset="5%" stopColor={REVENUE_COLOR} stopOpacity={0.2} />
                 <stop offset="95%" stopColor={REVENUE_COLOR} stopOpacity={0} />
               </linearGradient>
               <linearGradient id="profGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={PROFIT_COLOR} stopOpacity={0.15} />
+                <stop offset="5%" stopColor={PROFIT_COLOR} stopOpacity={0.2} />
                 <stop offset="95%" stopColor={PROFIT_COLOR} stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e2dc" />
-            <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#6b7280' }} />
-            <YAxis tick={{ fontSize: 12, fill: '#6b7280' }} tickFormatter={(v) => formatCurrency(v, currency)} />
-            <Tooltip content={<ChartTooltipContent currency={currency} />} />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.03)" vertical={false} />
+            <XAxis
+              dataKey="month"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fontSize: 10, fill: '#64748b', fontWeight: 500 }}
+              dy={10}
+            />
+            <YAxis
+              axisLine={false}
+              tickLine={false}
+              tick={{ fontSize: 10, fill: '#64748b', fontWeight: 500 }}
+              tickFormatter={(v) => formatCurrency(v, currency)}
+            />
+            <Tooltip
+              content={<ChartTooltipContent currency={currency} />}
+              cursor={{ stroke: 'rgba(0,0,0,0.05)', strokeWidth: 1 }}
+            />
             <Area
               type="monotone"
               dataKey="revenue"
               name="Revenue"
               stroke={REVENUE_COLOR}
-              strokeWidth={2}
+              strokeWidth={3}
               fill="url(#revGrad)"
+              activeDot={{ r: 6, strokeWidth: 0, fill: REVENUE_COLOR }}
             />
             <Area
               type="monotone"
               dataKey="profit"
               name="Profit"
               stroke={PROFIT_COLOR}
-              strokeWidth={2}
+              strokeWidth={3}
               fill="url(#profGrad)"
+              activeDot={{ r: 6, strokeWidth: 0, fill: PROFIT_COLOR }}
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -170,69 +202,85 @@ export function OverviewTab({ data, currency = '$' }: OverviewTabProps) {
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Revenue by Product donut */}
-        <div className="animate-fade-up-delay-1 rounded-2xl border border-border bg-card p-6 shadow-sm">
-          <h3 className="mb-4 font-serif text-lg text-card-foreground">
-            Revenue by Product
-          </h3>
-          <ResponsiveContainer width="100%" height={250}>
+        <div className="animate-fade-up-delay-1 glass-card p-6 shadow-sm">
+          <div className="mb-4">
+            <h3 className="font-serif text-lg font-bold text-card-foreground">
+              Market Distribution
+            </h3>
+            <p className="text-xs text-muted-foreground uppercase tracking-widest mt-0.5">Revenue by Product Line</p>
+          </div>
+          <ResponsiveContainer width="100%" height={260}>
             <PieChart>
               <Pie
                 data={productData}
                 cx="50%"
                 cy="50%"
-                innerRadius={60}
-                outerRadius={100}
-                paddingAngle={3}
+                innerRadius={75}
+                outerRadius={105}
+                paddingAngle={4}
                 dataKey="value"
+                stroke="none"
               >
                 {productData.map((_, idx) => (
                   <Cell
                     key={idx}
                     fill={CHART_COLORS[idx % CHART_COLORS.length]}
+                    className="hover:opacity-80 transition-opacity duration-300"
                   />
                 ))}
               </Pie>
               <Tooltip
-                formatter={(value: number) => formatCurrencyFull(value, currency)}
-                contentStyle={{
-                  borderRadius: '8px',
-                  border: '1px solid #e5e2dc',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-                }}
+                content={<ChartTooltipContent currency={currency} />}
               />
             </PieChart>
           </ResponsiveContainer>
-          <div className="mt-2 flex flex-wrap justify-center gap-3">
+          <div className="mt-4 flex flex-wrap justify-center gap-x-4 gap-y-2">
             {productData.map((p, i) => (
-              <div key={p.name} className="flex items-center gap-1.5 text-xs">
+              <div key={p.name} className="flex items-center gap-1.5">
                 <span
-                  className="h-2.5 w-2.5 rounded-full"
+                  className="h-1.5 w-1.5 rounded-full"
                   style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }}
                 />
-                <span className="text-muted-foreground">{p.name}</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{p.name}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Units per month bar chart */}
-        <div className="animate-fade-up-delay-2 rounded-2xl border border-border bg-card p-6 shadow-sm">
-          <h3 className="mb-4 font-serif text-lg text-card-foreground">
-            Units Sold per Month
-          </h3>
-          <ResponsiveContainer width="100%" height={250}>
+        <div className="animate-fade-up-delay-2 glass-card p-6 shadow-sm">
+          <div className="mb-4">
+            <h3 className="font-serif text-lg font-bold text-card-foreground">
+              Volume Analysis
+            </h3>
+            <p className="text-xs text-muted-foreground uppercase tracking-widest mt-0.5">Units Sold Consistency</p>
+          </div>
+          <ResponsiveContainer width="100%" height={260}>
             <BarChart data={unitsData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e2dc" />
-              <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#6b7280' }} />
-              <YAxis tick={{ fontSize: 12, fill: '#6b7280' }} />
-              <Tooltip
-                contentStyle={{
-                  borderRadius: '8px',
-                  border: '1px solid #e5e2dc',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-                }}
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.03)" vertical={false} />
+              <XAxis
+                dataKey="month"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 10, fill: '#64748b', fontWeight: 500 }}
+                dy={10}
               />
-              <Bar dataKey="units" name="Units" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 10, fill: '#64748b', fontWeight: 500 }}
+              />
+              <Tooltip
+                content={<ChartTooltipContent currency={currency} />}
+                cursor={{ fill: 'rgba(0,0,0,0.02)' }}
+              />
+              <Bar
+                dataKey="units"
+                name="Units"
+                fill={UNITS_COLOR}
+                radius={[6, 6, 0, 0]}
+                barSize={32}
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -240,25 +288,32 @@ export function OverviewTab({ data, currency = '$' }: OverviewTabProps) {
 
       {/* Quick Insights */}
       {insights && (
-        <div className="animate-fade-up-delay-3 rounded-2xl border border-border bg-card p-6 shadow-sm">
-          <h3 className="mb-4 font-serif text-lg text-card-foreground">
-            Quick Insights
-          </h3>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
+        <div className="animate-fade-up-delay-3 glass-card p-6 shadow-sm">
+          <div className="mb-6">
+            <h3 className="font-serif text-lg font-bold text-card-foreground">
+              Strategic Insights
+            </h3>
+            <p className="text-xs text-muted-foreground uppercase tracking-widest mt-0.5">Automated Performance Breakdown</p>
+          </div>
+          <div className="grid grid-cols-2 gap-8 md:grid-cols-5">
             {[
-              { icon: TrendingUp, label: 'Best Month', primary: insights.bestMonth.label, secondary: insights.bestMonth.value },
-              { icon: Star, label: 'Top Product', primary: insights.topProduct.label, secondary: insights.topProduct.value },
-              { icon: MapPin, label: 'Top Region', primary: insights.topRegion.label, secondary: insights.topRegion.value },
-              { icon: User, label: 'Top Rep', primary: insights.topRep.label, secondary: insights.topRep.value },
-              { icon: TrendingUp, label: 'Profit Margin', primary: insights.margin, secondary: 'overall' },
+              { icon: TrendingUp, label: 'High Performance', primary: insights.bestMonth.label, secondary: 'Peak Revenue Month', color: 'text-emerald-500' },
+              { icon: Star, label: 'Flagship Product', primary: insights.topProduct.label, secondary: 'Top Revenue Contributor', color: 'text-amber-500' },
+              { icon: MapPin, label: 'Core Market', primary: insights.topRegion.label, secondary: 'Dominant Sales Region', color: 'text-blue-500' },
+              { icon: User, label: 'Star Performer', primary: insights.topRep.label, secondary: 'Leading Sales Representative', color: 'text-indigo-500' },
+              { icon: BarChart3, label: 'Capital Efficiency', primary: insights.margin, secondary: 'Net Profit Margin', color: 'text-violet-500' },
             ].map((item) => (
-              <div key={item.label} className="flex flex-col gap-1">
-                <div className="flex items-center gap-1.5">
-                  <item.icon className="h-3.5 w-3.5 text-primary" />
-                  <span className="text-xs text-muted-foreground">{item.label}</span>
+              <div key={item.label} className="flex flex-col gap-2 group cursor-default">
+                <div className="flex items-center gap-2">
+                  <div className={`p-1.5 rounded-lg bg-muted/50 transition-colors duration-300 group-hover:bg-primary/10 ${item.color.replace('text', 'bg').replace('500', '500/10')}`}>
+                    <item.icon className={`h-4 w-4 ${item.color}`} />
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{item.label}</span>
                 </div>
-                <p className="text-sm font-semibold text-card-foreground">{item.primary}</p>
-                <p className="text-xs text-muted-foreground">{item.secondary}</p>
+                <div>
+                  <p className="text-base font-bold text-card-foreground tracking-tight">{item.primary}</p>
+                  <p className="text-[10px] text-muted-foreground font-medium">{item.secondary}</p>
+                </div>
               </div>
             ))}
           </div>

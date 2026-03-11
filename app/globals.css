@@ -4,79 +4,86 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #f7f6f3;
-  --foreground: #1a1a1a;
+  --background: #f8fafc;
+  /* Softer slate white */
+  --foreground: #0f172a;
+  /* Deep sapphire black */
   --card: #ffffff;
-  --card-foreground: #1a1a1a;
+  --card-foreground: #0f172a;
   --popover: #ffffff;
-  --popover-foreground: #1a1a1a;
-  --primary: #2563eb;
+  --popover-foreground: #0f172a;
+  --primary: #0f172a;
+  /* Use deep dark for primary (Very Enterprise) */
   --primary-foreground: #ffffff;
-  --secondary: #f0eeeb;
-  --secondary-foreground: #1a1a1a;
-  --muted: #f0eeeb;
-  --muted-foreground: #6b7280;
-  --accent: #f0eeeb;
-  --accent-foreground: #1a1a1a;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #1e293b;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #f1f5f9;
+  --accent-foreground: #1e293b;
   --destructive: #ef4444;
-  --destructive-foreground: #ef4444;
-  --border: #e5e2dc;
-  --input: #e5e2dc;
-  --ring: #2563eb;
-  --chart-1: #2563eb;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #0f172a;
+  --chart-1: #3b82f6;
+  /* Azure Blue */
   --chart-2: #10b981;
+  /* Emerald */
   --chart-3: #f59e0b;
-  --chart-4: #8b5cf6;
+  --chart-4: #6366f1;
   --chart-5: #ec4899;
-  --radius: 1rem;
+  --radius: 0.75rem;
+  /* Slightly tighter rounding for enterprise */
   --success: #10b981;
   --warning: #f59e0b;
   --sidebar: #ffffff;
-  --sidebar-foreground: #1a1a1a;
-  --sidebar-primary: #2563eb;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #0f172a;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f0eeeb;
-  --sidebar-accent-foreground: #1a1a1a;
-  --sidebar-border: #e5e2dc;
-  --sidebar-ring: #2563eb;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #0f172a;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #0f172a;
 }
 
-/* ── Dark mode ─────────────────────────────────────────────────── */
+/* ── Dark mode (Premium Deep Blue/Black) ────────────────────────── */
 .dark {
-  --background: #0f1117;
-  --foreground: #f0f0f0;
-  --card: #1a1d27;
-  --card-foreground: #f0f0f0;
-  --popover: #1a1d27;
-  --popover-foreground: #f0f0f0;
-  --primary: #3b82f6;
-  --primary-foreground: #ffffff;
-  --secondary: #252836;
-  --secondary-foreground: #d1d5db;
-  --muted: #252836;
-  --muted-foreground: #9ca3af;
-  --accent: #252836;
-  --accent-foreground: #d1d5db;
+  --background: #020617;
+  /* Very deep blue-black */
+  --foreground: #f8fafc;
+  --card: #0f172a;
+  --card-foreground: #f8fafc;
+  --popover: #0f172a;
+  --popover-foreground: #f8fafc;
+  --primary: #f8fafc;
+  --primary-foreground: #020617;
+  --secondary: #1e293b;
+  --secondary-foreground: #f8fafc;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --accent: #1e293b;
+  --accent-foreground: #f8fafc;
   --destructive: #f87171;
-  --destructive-foreground: #f87171;
-  --border: #2e3244;
-  --input: #2e3244;
-  --ring: #3b82f6;
-  --chart-1: #3b82f6;
+  --destructive-foreground: #ffffff;
+  --border: #1e293b;
+  --input: #1e293b;
+  --ring: #f8fafc;
+  --chart-1: #60a5fa;
   --chart-2: #34d399;
   --chart-3: #fbbf24;
-  --chart-4: #a78bfa;
+  --chart-4: #818cf8;
   --chart-5: #f472b6;
   --success: #34d399;
   --warning: #fbbf24;
-  --sidebar: #1a1d27;
-  --sidebar-foreground: #f0f0f0;
-  --sidebar-primary: #3b82f6;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #252836;
-  --sidebar-accent-foreground: #d1d5db;
-  --sidebar-border: #2e3244;
-  --sidebar-ring: #3b82f6;
+  --sidebar: #0f172a;
+  --sidebar-foreground: #f8fafc;
+  --sidebar-primary: #f8fafc;
+  --sidebar-primary-foreground: #020617;
+  --sidebar-accent: #1e293b;
+  --sidebar-accent-foreground: #f8fafc;
+  --sidebar-border: #1e293b;
+  --sidebar-ring: #f8fafc;
 }
 
 @theme inline {
@@ -127,6 +134,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -137,6 +145,7 @@
     opacity: 0;
     transform: translateY(12px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -147,7 +156,22 @@
   animation: fade-up 0.4s ease-out forwards;
 }
 
-.animate-fade-up-delay-1 { animation: fade-up 0.4s ease-out 0.05s forwards; opacity: 0; }
-.animate-fade-up-delay-2 { animation: fade-up 0.4s ease-out 0.1s forwards; opacity: 0; }
-.animate-fade-up-delay-3 { animation: fade-up 0.4s ease-out 0.15s forwards; opacity: 0; }
-.animate-fade-up-delay-4 { animation: fade-up 0.4s ease-out 0.2s forwards; opacity: 0; }
+.animate-fade-up-delay-1 {
+  animation: fade-up 0.4s ease-out 0.05s forwards;
+  opacity: 0;
+}
+
+.animate-fade-up-delay-2 {
+  animation: fade-up 0.4s ease-out 0.1s forwards;
+  opacity: 0;
+}
+
+.animate-fade-up-delay-3 {
+  animation: fade-up 0.4s ease-out 0.15s forwards;
+  opacity: 0;
+}
+
+.animate-fade-up-delay-4 {
+  animation: fade-up 0.4s ease-out 0.2s forwards;
+  opacity: 0;
+}

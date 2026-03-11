@@ -85,22 +85,25 @@ export function AddSaleDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="font-serif">Add New Sale</DialogTitle>
-          <DialogDescription>
-            Enter the details for the new sale record.
+      <DialogContent className="sm:max-w-md glass-card border-none shadow-2xl backdrop-blur-xl p-8">
+        <DialogHeader className="mb-6">
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-primary/60">System Entry</span>
+            <DialogTitle className="font-serif text-2xl font-bold tracking-tight">Record Transaction</DialogTitle>
+          </div>
+          <DialogDescription className="text-muted-foreground/80 font-medium">
+            Register a new sales record in the corporate registry.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-2">
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="sale-month">Month</Label>
+              <Label htmlFor="sale-month" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">Fiscal Period</Label>
               <Select
                 value={form.month}
                 onValueChange={(v) => setForm({ ...form, month: v })}
               >
-                <SelectTrigger id="sale-month" className="w-full">
+                <SelectTrigger id="sale-month" className="w-full h-11 bg-muted/20 border-border/50 rounded-xl focus:ring-2 focus:ring-primary/20">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
@@ -113,12 +116,12 @@ export function AddSaleDialog({
               </Select>
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="sale-region">Region</Label>
+              <Label htmlFor="sale-region" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">Region</Label>
               <Select
                 value={form.region}
                 onValueChange={(v) => setForm({ ...form, region: v })}
               >
-                <SelectTrigger id="sale-region" className="w-full">
+                <SelectTrigger id="sale-region" className="w-full h-11 bg-muted/20 border-border/50 rounded-xl focus:ring-2 focus:ring-primary/20">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
@@ -133,12 +136,12 @@ export function AddSaleDialog({
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="sale-product">Product</Label>
+              <Label htmlFor="sale-product" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">Category</Label>
               <Select
                 value={form.product}
                 onValueChange={(v) => setForm({ ...form, product: v })}
               >
-                <SelectTrigger id="sale-product" className="w-full">
+                <SelectTrigger id="sale-product" className="w-full h-11 bg-muted/20 border-border/50 rounded-xl focus:ring-2 focus:ring-primary/20">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
@@ -151,12 +154,12 @@ export function AddSaleDialog({
               </Select>
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="sale-rep">Rep</Label>
+              <Label htmlFor="sale-rep" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">Executive</Label>
               <Select
                 value={form.rep}
                 onValueChange={(v) => setForm({ ...form, rep: v })}
               >
-                <SelectTrigger id="sale-rep" className="w-full">
+                <SelectTrigger id="sale-rep" className="w-full h-11 bg-muted/20 border-border/50 rounded-xl focus:ring-2 focus:ring-primary/20">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
@@ -202,12 +205,12 @@ export function AddSaleDialog({
             </div>
           </div>
         </div>
-        <DialogFooter>
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            Cancel
+        <DialogFooter className="mt-8">
+          <Button variant="ghost" onClick={() => onOpenChange(false)} className="h-11 rounded-xl font-bold uppercase tracking-widest text-[10px] text-muted-foreground">
+            Discard
           </Button>
-          <Button onClick={handleSave} disabled={!canSave}>
-            Save Sale
+          <Button onClick={handleSave} disabled={!canSave} className="h-11 rounded-xl px-8 font-bold uppercase tracking-widest text-[11px] enterprise-shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98]">
+            Commit Record
           </Button>
         </DialogFooter>
       </DialogContent>

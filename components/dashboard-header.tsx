@@ -10,124 +10,66 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { BarChart3, Plus, LogOut, User } from 'lucide-react'
+import { Search, Bell, Settings, Plus, BarChart3, Menu } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { signOutUser } from '@/lib/firebase/auth'
 import { useRouter } from 'next/navigation'
 import { ThemeToggle } from '@/components/theme-toggle'
 
 interface DashboardHeaderProps {
-  companyName: string
-  activeTab: string
-  onTabChange: (tab: string) => void
   onAddSale: () => void
+  onMenuClick?: () => void
 }
 
-const tabs = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'regional', label: 'Regional' },
-  { id: 'products', label: 'Products' },
-  { id: 'reps', label: 'Reps' },
-  { id: 'data', label: 'Data' },
-]
-
-export function DashboardHeader({
-  companyName,
-  activeTab,
-  onTabChange,
-  onAddSale,
-}: DashboardHeaderProps) {
-  const { user } = useAuth()
-  const router = useRouter()
-
-  const initials = user?.displayName
-    ? user.displayName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
-    : user?.email?.[0].toUpperCase() ?? 'U'
-
-  async function handleSignOut() {
-    await signOutUser()
-    router.replace('/login')
-  }
-
+export function DashboardHeader({ onAddSale, onMenuClick }: DashboardHeaderProps) {
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur-sm">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 lg:px-6">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-            <BarChart3 className="h-4 w-4 text-primary-foreground" />
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="font-serif text-lg text-foreground">SalesIQ</span>
-            <span className="hidden text-sm text-muted-foreground sm:inline">
-              / {companyName}
-            </span>
-          </div>
+    <header className="sticky top-0 z-40 border-b border-border bg-background/95 px-4 lg:px-6 py-3 backdrop-blur-sm">
+      <div className="flex items-center justify-between gap-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="lg:hidden shrink-0"
+          onClick={onMenuClick}
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+        {/* Global Search Placeholder */}
+        <div className="relative w-full max-w-md">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Search dashboard, records, analytics..."
+            className="h-10 w-full rounded-xl border border-border bg-muted/50 pl-10 pr-4 text-sm transition-all focus:border-primary/50 focus:bg-card focus:outline-none focus:ring-4 focus:ring-primary/5"
+          />
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button onClick={onAddSale} size="sm" className="gap-1.5">
-            <Plus className="h-4 w-4" />
-            <span className="hidden sm:inline">Add Sale</span>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative rounded-full text-muted-foreground hover:text-foreground"
+          >
+            <Bell className="h-5 w-5" />
+            <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-primary ring-2 ring-background" />
           </Button>
 
-          {/* Dark mode toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-full text-muted-foreground hover:text-foreground"
+          >
+            <Settings className="h-5 w-5" />
+          </Button>
+
+          <div className="mx-2 h-5 w-px bg-border" />
+
+          <Button onClick={onAddSale} className="gap-2 rounded-xl px-5 shadow-lg shadow-primary/10 transition-all hover:scale-[1.02] active:scale-[0.98]">
+            <Plus className="h-4.5 w-4.5" />
+            <span>New Sale</span>
+          </Button>
+
           <ThemeToggle />
-
-          {/* User menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
-                <Avatar className="h-8 w-8 cursor-pointer ring-2 ring-border hover:ring-primary transition-all">
-                  <AvatarImage src={user?.photoURL ?? ''} alt={user?.displayName ?? 'User'} />
-                  <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
-                    {initials}
-                  </AvatarFallback>
-                </Avatar>
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-52">
-              <DropdownMenuLabel>
-                <div className="flex flex-col gap-0.5">
-                  <span className="font-medium">{user?.displayName ?? 'User'}</span>
-                  <span className="text-xs text-muted-foreground font-normal truncate">
-                    {user?.email}
-                  </span>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="gap-2 text-muted-foreground">
-                <User className="h-4 w-4" />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="gap-2 text-destructive focus:text-destructive"
-                onClick={handleSignOut}
-              >
-                <LogOut className="h-4 w-4" />
-                Sign out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
-      </div>
-
-      <div className="mx-auto max-w-7xl px-4 lg:px-6">
-        <nav className="-mb-px flex gap-1 overflow-x-auto" aria-label="Dashboard tabs">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => onTabChange(tab.id)}
-              className={`whitespace-nowrap border-b-2 px-3 py-2.5 text-sm font-medium transition-colors ${activeTab === tab.id
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
-                }`}
-              aria-current={activeTab === tab.id ? 'page' : undefined}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </nav>
       </div>
     </header>
   )

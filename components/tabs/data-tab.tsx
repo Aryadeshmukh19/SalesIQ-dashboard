@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { formatCurrencyFull } from '@/lib/format'
 import type { SaleRecord } from '@/lib/types'
 import { Pencil, Trash2, Check, X, Database } from 'lucide-react'
+import { EmptyState } from '@/components/empty-state'
 
 interface DataTabProps {
   data: SaleRecord[]
@@ -38,36 +39,37 @@ export function DataTab({ data, currency = '$', onUpdate, onDelete }: DataTabPro
 
   if (data.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted">
-          <Database className="h-8 w-8 text-muted-foreground" />
-        </div>
-        <h3 className="font-serif text-xl text-foreground">No records yet</h3>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Add your first sale to see data here.
-        </p>
-      </div>
+      <EmptyState
+        icon={Database}
+        title="No records yet"
+        description="Add your first sale record to start building your database and see insights."
+      />
     )
   }
 
   return (
-    <div className="animate-fade-up rounded-2xl border border-border bg-card p-6 shadow-sm">
-      <h3 className="mb-4 font-serif text-lg text-card-foreground">
-        All Sales Records ({data.length})
-      </h3>
+    <div className="animate-fade-up glass-card p-6 shadow-sm">
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h3 className="font-serif text-lg font-bold text-card-foreground">
+            Centralized Sales Records
+          </h3>
+          <p className="text-xs text-muted-foreground uppercase tracking-widest mt-0.5">Full Transaction History — {data.length} Records</p>
+        </div>
+      </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-border">
-              <th className="pb-3 text-left font-medium text-muted-foreground">Month</th>
-              <th className="pb-3 text-left font-medium text-muted-foreground">Region</th>
-              <th className="pb-3 text-left font-medium text-muted-foreground">Product</th>
-              <th className="pb-3 text-left font-medium text-muted-foreground">Rep</th>
-              <th className="pb-3 text-right font-medium text-muted-foreground">Revenue</th>
-              <th className="pb-3 text-right font-medium text-muted-foreground">Units</th>
-              <th className="pb-3 text-right font-medium text-muted-foreground">Cost</th>
-              <th className="pb-3 text-right font-medium text-muted-foreground">Profit</th>
-              <th className="pb-3 text-right font-medium text-muted-foreground">Actions</th>
+            <tr className="border-b border-border/50">
+              <th className="pb-4 text-left font-bold uppercase tracking-tighter text-[10px] text-muted-foreground/60 w-24">Month</th>
+              <th className="pb-4 text-left font-bold uppercase tracking-tighter text-[10px] text-muted-foreground/60">Region</th>
+              <th className="pb-4 text-left font-bold uppercase tracking-tighter text-[10px] text-muted-foreground/60">Product</th>
+              <th className="pb-4 text-left font-bold uppercase tracking-tighter text-[10px] text-muted-foreground/60">Rep</th>
+              <th className="pb-4 text-right font-bold uppercase tracking-tighter text-[10px] text-muted-foreground/60">Revenue</th>
+              <th className="pb-4 text-right font-bold uppercase tracking-tighter text-[10px] text-muted-foreground/60">Units</th>
+              <th className="pb-4 text-right font-bold uppercase tracking-tighter text-[10px] text-muted-foreground/60">Cost</th>
+              <th className="pb-4 text-right font-bold uppercase tracking-tighter text-[10px] text-muted-foreground/60">Profit</th>
+              <th className="pb-4 text-right font-bold uppercase tracking-tighter text-[10px] text-muted-foreground/60">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -76,7 +78,7 @@ export function DataTab({ data, currency = '$', onUpdate, onDelete }: DataTabPro
               return (
                 <tr
                   key={record.id}
-                  className="border-b border-border/50 transition-colors hover:bg-muted/50"
+                  className="group border-b border-border/30 transition-all duration-200 hover:bg-muted/30"
                 >
                   <td className="py-2.5 text-card-foreground">
                     {isEditing ? (
@@ -188,35 +190,35 @@ export function DataTab({ data, currency = '$', onUpdate, onDelete }: DataTabPro
                       currency
                     )}
                   </td>
-                  <td className="py-2.5 text-right">
+                  <td className="py-4 text-right">
                     {isEditing ? (
-                      <div className="flex items-center justify-end gap-1">
+                      <div className="flex items-center justify-end gap-1.5">
                         <Button
                           size="sm"
                           variant="ghost"
                           onClick={saveEdit}
-                          className="h-7 w-7 p-0 text-success"
+                          className="h-8 w-8 p-0 text-emerald-500 hover:bg-emerald-500/10 rounded-lg"
                         >
-                          <Check className="h-3.5 w-3.5" />
+                          <Check className="h-4 w-4" />
                           <span className="sr-only">Save</span>
                         </Button>
                         <Button
                           size="sm"
                           variant="ghost"
                           onClick={cancelEdit}
-                          className="h-7 w-7 p-0 text-muted-foreground"
+                          className="h-8 w-8 p-0 text-muted-foreground hover:bg-muted/50 rounded-lg"
                         >
-                          <X className="h-3.5 w-3.5" />
+                          <X className="h-4 w-4" />
                           <span className="sr-only">Cancel</span>
                         </Button>
                       </div>
                     ) : (
-                      <div className="flex items-center justify-end gap-1">
+                      <div className="flex items-center justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                         <Button
                           size="sm"
                           variant="ghost"
                           onClick={() => startEdit(record)}
-                          className="h-7 w-7 p-0 text-muted-foreground hover:text-primary"
+                          className="h-8 w-8 p-0 text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-lg"
                         >
                           <Pencil className="h-3.5 w-3.5" />
                           <span className="sr-only">Edit</span>
@@ -225,7 +227,7 @@ export function DataTab({ data, currency = '$', onUpdate, onDelete }: DataTabPro
                           size="sm"
                           variant="ghost"
                           onClick={() => onDelete(record.id)}
-                          className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
+                          className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/5 rounded-lg"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                           <span className="sr-only">Delete</span>

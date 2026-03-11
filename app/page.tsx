@@ -3,6 +3,7 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { Onboarding } from '@/components/onboarding'
 import { DashboardHeader } from '@/components/dashboard-header'
+import { Sidebar } from '@/components/sidebar'
 import { KpiBar } from '@/components/kpi-bar'
 import { AddSaleDialog } from '@/components/add-sale-dialog'
 import { OverviewTab } from '@/components/tabs/overview-tab'
@@ -12,6 +13,7 @@ import { RepsTab } from '@/components/tabs/reps-tab'
 import { DataTab } from '@/components/tabs/data-tab'
 import { WelcomeGreeting } from '@/components/welcome-greeting'
 import { AuthGuard } from '@/components/auth/AuthGuard'
+import { Sheet, SheetContent } from '@/components/ui/sheet'
 import { useAuth } from '@/context/AuthContext'
 import { industryTemplates } from '@/lib/industry-templates'
 import { getRegionsForWorldRegion } from '@/lib/regions'
@@ -35,6 +37,7 @@ function Dashboard() {
   const [addSaleOpen, setAddSaleOpen] = useState(false)
   const [hydrating, setHydrating] = useState(true)
   const [showGreeting, setShowGreeting] = useState(false)
+  const [showMobileMenu, setShowMobileMenu] = useState(false)
   const greetingShown = useRef(false)
 
   // On mount, try to load existing data for the logged-in user
@@ -71,10 +74,10 @@ function Dashboard() {
   }, [profile])
 
   const handleOnboardingComplete = useCallback(
-    async (p: CompanyProfile, regions: string[]) => {
+    async (p: CompanyProfile, regions: string[], useSampleData: boolean) => {
       const base = industryTemplates[p.industry] || industryTemplates['Custom']
       const templateWithRegions = { ...base, regions }
-      const seedData = generateSeedData(templateWithRegions)
+      const seedData = useSampleData ? generateSeedData(templateWithRegions) : []
       setProfile(p)
       setData(seedData)
       // Show greeting after onboarding
@@ -133,34 +136,72 @@ function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {showGreeting && (
-        <WelcomeGreeting
-          user={user}
-          onDismiss={() => setShowGreeting(false)}
+    <div className="flex min-h-screen bg-background text-foreground">
+      {/* Desktop Sidebar */}
+      <div className="hidden lg:block w-64 shrink-0 border-r border-border">
+        <Sidebar
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          companyName={profile.name}
         />
-      )}
-      <DashboardHeader
-        companyName={profile.name}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        onAddSale={() => setAddSaleOpen(true)}
-      />
-      <KpiBar data={data} currency={currency} />
-      <main className="mx-auto max-w-7xl px-4 pb-12 lg:px-6">
-        {activeTab === 'overview' && <OverviewTab data={data} currency={currency} />}
-        {activeTab === 'regional' && <RegionalTab data={data} currency={currency} template={template} onAddSale={handleAddSale} />}
-        {activeTab === 'products' && <ProductsTab data={data} currency={currency} />}
-        {activeTab === 'reps' && <RepsTab data={data} currency={currency} />}
-        {activeTab === 'data' && (
-          <DataTab
-            data={data}
-            currency={currency}
-            onUpdate={handleUpdateSale}
-            onDelete={handleDeleteSale}
+      </div>
+
+      <div className="flex flex-1 flex-col min-w-0 transition-all duration-300">
+        <Sheet open={showMobileMenu} onOpenChange={setShowMobileMenu}>
+          <SheetContent side="left" className="p-0 w-64 border-none">
+            <Sidebar
+              activeTab={activeTab}
+              onTabChange={(tab) => {
+                setActiveTab(tab)
+                setShowMobileMenu(false)
+              }}
+              companyName={profile.name}
+            />
+          </SheetContent>
+        </Sheet>
+        {showGreeting && (
+          <WelcomeGreeting
+            user={user}
+            onDismiss={() => setShowGreeting(false)}
           />
         )}
-      </main>
+
+        <DashboardHeader
+          onAddSale={() => setAddSaleOpen(true)}
+          onMenuClick={() => setShowMobileMenu(true)}
+        />
+
+        <main className="flex-1 overflow-y-auto px-4 lg:px-8 py-8">
+          <div className="mx-auto max-w-6xl space-y-8">
+            <div className="flex flex-col gap-1">
+              <h1 className="font-serif text-3xl font-semibold tracking-tight first-letter:capitalize">
+                {activeTab} Analytics
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Real-time performance metrics and insights for your enterprise.
+              </p>
+            </div>
+
+            <KpiBar data={data} currency={currency} />
+
+            <div className="animate-fade-up">
+              {activeTab === 'overview' && <OverviewTab data={data} currency={currency} />}
+              {activeTab === 'regional' && <RegionalTab data={data} currency={currency} template={template} onAddSale={handleAddSale} />}
+              {activeTab === 'products' && <ProductsTab data={data} currency={currency} />}
+              {activeTab === 'reps' && <RepsTab data={data} currency={currency} />}
+              {activeTab === 'data' && (
+                <DataTab
+                  data={data}
+                  currency={currency}
+                  onUpdate={handleUpdateSale}
+                  onDelete={handleDeleteSale}
+                />
+              )}
+            </div>
+          </div>
+        </main>
+      </div>
+
       {template && (
         <AddSaleDialog
           open={addSaleOpen}

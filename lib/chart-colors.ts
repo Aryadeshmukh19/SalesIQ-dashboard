@@ -1,12 +1,12 @@
 export const CHART_COLORS = [
-  '#2563eb',
-  '#10b981',
-  '#f59e0b',
-  '#8b5cf6',
-  '#ec4899',
-  '#06b6d4',
-  '#f97316',
-  '#14b8a6',
+  '#0f172a', // Enterprise Slate
+  '#2563eb', // Modern Blue
+  '#10b981', // Emerald Success
+  '#6366f1', // Indigo Insight
+  '#f59e0b', // Amber Warning
+  '#8b5cf6', // Violet
+  '#06b6d4', // Cyan
+  '#14b8a6', // Teal
 ] as const
 
 export const REVENUE_COLOR = '#2563eb'

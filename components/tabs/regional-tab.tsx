@@ -19,6 +19,7 @@ import type { SaleRecord } from '@/lib/types'
 import type { IndustryTemplate } from '@/lib/industry-templates'
 import { MapPin } from 'lucide-react'
 import { AddRegionalDataPanel } from '@/components/add-regional-data-panel'
+import { EmptyState } from '@/components/empty-state'
 
 interface RegionalTabProps {
   data: SaleRecord[]
@@ -47,15 +48,11 @@ export function RegionalTab({ data, template, onAddSale, currency = '$' }: Regio
     return (
       <div className="flex flex-col gap-6">
         {template && <AddRegionalDataPanel template={template} onAddSale={onAddSale} currency={currency} />}
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted">
-            <MapPin className="h-8 w-8 text-muted-foreground" />
-          </div>
-          <h3 className="font-serif text-xl text-foreground">No regional data yet</h3>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Use the panel above to add your first regional sale.
-          </p>
-        </div>
+        <EmptyState
+          icon={MapPin}
+          title="No regional data yet"
+          description="Use the panel above to add your first regional sale and see geographic performance."
+        />
       </div>
     )
   }
@@ -65,90 +62,112 @@ export function RegionalTab({ data, template, onAddSale, currency = '$' }: Regio
       {template && <AddRegionalDataPanel template={template} onAddSale={onAddSale} currency={currency} />}
       <div className="grid gap-6 md:grid-cols-2">
         {/* Pie chart */}
-        <div className="animate-fade-up rounded-2xl border border-border bg-card p-6 shadow-sm">
-          <h3 className="mb-4 font-serif text-lg text-card-foreground">
-            Revenue by Region
-          </h3>
+        <div className="animate-fade-up glass-card p-6 shadow-sm">
+          <div className="mb-6">
+            <h3 className="font-serif text-lg font-bold text-card-foreground">
+              Geographic Revenue Distribution
+            </h3>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-0.5">Global Market Share Analysis</p>
+          </div>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
                 data={regionData}
                 cx="50%"
                 cy="50%"
-                outerRadius={110}
-                paddingAngle={2}
+                innerRadius={60}
+                outerRadius={100}
+                paddingAngle={5}
                 dataKey="value"
-                label={({ name, percent }) =>
-                  `${name} ${formatPercent(percent)}`
-                }
-                labelLine={false}
+                stroke="none"
               >
                 {regionData.map((_, idx) => (
                   <Cell
                     key={idx}
                     fill={CHART_COLORS[idx % CHART_COLORS.length]}
+                    className="hover:opacity-80 transition-opacity cursor-pointer"
                   />
                 ))}
               </Pie>
               <Tooltip
                 formatter={(value: number) => formatCurrencyFull(value, currency)}
                 contentStyle={{
-                  borderRadius: '8px',
-                  border: '1px solid #e5e2dc',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                  backdropFilter: 'blur(12px)',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+                  padding: '12px',
                 }}
+                itemStyle={{ color: '#1e293b', fontWeight: 600 }}
               />
             </PieChart>
           </ResponsiveContainer>
         </div>
 
         {/* Horizontal bar ranking */}
-        <div className="animate-fade-up-delay-1 rounded-2xl border border-border bg-card p-6 shadow-sm">
-          <h3 className="mb-4 font-serif text-lg text-card-foreground">
-            Region Ranking
-          </h3>
+        <div className="animate-fade-up-delay-1 glass-card p-6 shadow-sm">
+          <div className="mb-6">
+            <h3 className="font-serif text-lg font-bold text-card-foreground">
+              Regional Performance Ranking
+            </h3>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-0.5">Ranked by Total Revenue Contribution</p>
+          </div>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={regionData} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e2dc" />
+            <BarChart data={regionData} layout="vertical" margin={{ left: -20 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" horizontal={false} />
               <XAxis
                 type="number"
-                tick={{ fontSize: 12, fill: '#6b7280' }}
-                tickFormatter={(v) => formatCurrency(v, currency)}
+                hide
               />
               <YAxis
                 dataKey="name"
                 type="category"
-                tick={{ fontSize: 12, fill: '#6b7280' }}
+                tick={{ fontSize: 11, fontWeight: 600, fill: '#64748b' }}
                 width={100}
+                axisLine={false}
+                tickLine={false}
               />
               <Tooltip
-                formatter={(value: number) => formatCurrencyFull(value)}
+                formatter={(value: number) => formatCurrencyFull(value, currency)}
+                cursor={{ fill: 'rgba(0,0,0,0.02)' }}
                 contentStyle={{
-                  borderRadius: '8px',
-                  border: '1px solid #e5e2dc',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+                  backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                  backdropFilter: 'blur(12px)',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
                 }}
               />
-              <Bar dataKey="value" name="Revenue" fill="#2563eb" radius={[0, 4, 4, 0]} />
+              <Bar
+                dataKey="value"
+                name="Revenue"
+                fill="var(--primary)"
+                radius={[0, 8, 8, 0]}
+                barSize={24}
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
       {/* Table */}
-      <div className="animate-fade-up-delay-2 rounded-2xl border border-border bg-card p-6 shadow-sm">
-        <h3 className="mb-4 font-serif text-lg text-card-foreground">
-          Regional Breakdown
-        </h3>
+      <div className="animate-fade-up-delay-2 glass-card p-6 shadow-sm">
+        <div className="mb-6">
+          <h3 className="font-serif text-lg font-bold text-card-foreground">
+            Regional Breakdown
+          </h3>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-0.5">Detailed market penetration metrics</p>
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border">
-                <th className="pb-3 text-left font-medium text-muted-foreground">Region</th>
-                <th className="pb-3 text-right font-medium text-muted-foreground">Revenue</th>
-                <th className="pb-3 text-right font-medium text-muted-foreground">Share</th>
-                <th className="hidden pb-3 text-left font-medium text-muted-foreground md:table-cell">
-                  <span className="ml-4">Performance</span>
+              <tr className="border-b border-border/50">
+                <th className="pb-4 text-left font-bold uppercase tracking-tighter text-[10px] text-muted-foreground/60">Region</th>
+                <th className="pb-4 text-right font-bold uppercase tracking-tighter text-[10px] text-muted-foreground/60">Revenue</th>
+                <th className="pb-4 text-right font-bold uppercase tracking-tighter text-[10px] text-muted-foreground/60">Market Share</th>
+                <th className="hidden pb-4 text-left font-bold uppercase tracking-tighter text-[10px] text-muted-foreground/60 md:table-cell">
+                  <span className="ml-4">Intensity</span>
                 </th>
               </tr>
             </thead>

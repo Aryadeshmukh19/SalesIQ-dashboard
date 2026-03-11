@@ -54,49 +54,53 @@ export function WelcomeGreeting({ user, onDismiss }: WelcomeGreetingProps) {
 
             {/* Greeting card */}
             <div
-                className="relative flex flex-col items-center gap-6 text-center transition-all duration-500"
+                className="relative flex flex-col items-center gap-8 text-center transition-all duration-700 glass-card p-12 shadow-2xl border-none"
                 style={{
                     opacity: visible && !leaving ? 1 : 0,
-                    transform: visible && !leaving ? 'translateY(0) scale(1)' : 'translateY(30px) scale(0.96)',
+                    transform: visible && !leaving ? 'translateY(0) scale(1)' : 'translateY(40px) scale(0.95)',
                 }}
                 onClick={(e) => e.stopPropagation()}
             >
-                {/* Animated emoji */}
-                <div
-                    className="text-6xl select-none"
-                    style={{
-                        animation: visible && !leaving ? 'wave 1.2s ease-in-out 0.3s 2' : 'none',
-                    }}
-                >
-                    👋
+                {/* Animated icon container */}
+                <div className="relative mb-2">
+                    <div className="absolute -inset-4 bg-primary/20 blur-2xl rounded-full animate-pulse" />
+                    <div
+                        className="text-7xl select-none relative z-10"
+                        style={{
+                            animation: visible && !leaving ? 'wave 1.5s ease-in-out 0.3s infinite' : 'none',
+                        }}
+                    >
+                        ✨
+                    </div>
                 </div>
 
                 {/* Text */}
-                <div className="space-y-2">
-                    <h1 className="font-serif text-4xl text-foreground sm:text-5xl">
+                <div className="space-y-3">
+                    <h1 className="font-serif text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                         Welcome back,
                     </h1>
-                    <p className="font-serif text-5xl text-primary sm:text-6xl font-medium">
+                    <p className="font-serif text-5xl text-primary sm:text-6xl font-black tracking-tighter">
                         {firstName}
                     </p>
-                    <p className="text-muted-foreground text-sm mt-4 font-sans">
-                        Your dashboard is ready ✦
-                    </p>
+                    <div className="flex items-center justify-center gap-2 mt-6">
+                        <div className="h-px w-8 bg-border" />
+                        <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground/60">
+                            Enterprise Instance Ready
+                        </p>
+                        <div className="h-px w-8 bg-border" />
+                    </div>
                 </div>
 
-                {/* Dismiss hint */}
-                <p className="text-xs text-muted-foreground/60 font-sans mt-2">
-                    Click anywhere to continue
-                </p>
-
                 {/* Progress bar showing auto-dismiss */}
-                <div className="w-40 h-0.5 rounded-full bg-border overflow-hidden">
+                <div className="w-48 h-1 rounded-full bg-primary/5 overflow-hidden mt-2 relative">
                     <div
                         className="h-full bg-primary rounded-full"
                         style={{
                             animation: visible && !leaving ? 'progress-fill 3.4s linear 0.1s forwards' : 'none',
                         }}
-                    />
+                    >
+                        <div className="absolute inset-0 bg-white/20 animate-pulse" />
+                    </div>
                 </div>
             </div>
 
