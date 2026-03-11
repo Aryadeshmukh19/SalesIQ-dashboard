@@ -1,16 +1,12 @@
 'use client'
 
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
+import dynamic from 'next/dynamic'
 import { Onboarding } from '@/components/onboarding'
 import { DashboardHeader } from '@/components/dashboard-header'
 import { Sidebar } from '@/components/sidebar'
 import { KpiBar } from '@/components/kpi-bar'
 import { AddSaleDialog } from '@/components/add-sale-dialog'
-import { OverviewTab } from '@/components/tabs/overview-tab'
-import { RegionalTab } from '@/components/tabs/regional-tab'
-import { ProductsTab } from '@/components/tabs/products-tab'
-import { RepsTab } from '@/components/tabs/reps-tab'
-import { DataTab } from '@/components/tabs/data-tab'
 import { WelcomeGreeting } from '@/components/welcome-greeting'
 import { AuthGuard } from '@/components/auth/AuthGuard'
 import { Sheet, SheetContent } from '@/components/ui/sheet'
@@ -27,6 +23,27 @@ import {
   updateSaleRecord,
   deleteSaleRecord,
 } from '@/lib/firebase/firestore'
+
+// Dynamically import Tabs with glass-skeleton placeholders
+const OverviewTab = dynamic(() => import('@/components/tabs/overview-tab').then(mod => mod.OverviewTab), {
+  loading: () => <div className="h-96 w-full animate-pulse rounded-2xl glass-card flex items-center justify-center"><p className="text-muted-foreground/40 text-sm font-serif">Initializing Strategic View...</p></div>
+})
+const RegionalTab = dynamic(() => import('@/components/tabs/regional-tab').then(mod => mod.RegionalTab), {
+  loading: () => <div className="h-96 w-full animate-pulse rounded-2xl glass-card" />
+})
+const ProductsTab = dynamic(() => import('@/components/tabs/products-tab').then(mod => mod.ProductsTab), {
+  loading: () => <div className="h-96 w-full animate-pulse rounded-2xl glass-card" />
+})
+const RepsTab = dynamic(() => import('@/components/tabs/reps-tab').then(mod => mod.RepsTab), {
+  loading: () => <div className="h-96 w-full animate-pulse rounded-2xl glass-card" />
+})
+const DataTab = dynamic(() => import('@/components/tabs/data-tab').then(mod => mod.DataTab), {
+  loading: () => <div className="h-96 w-full animate-pulse rounded-2xl glass-card" />
+})
+const MarketingTab = dynamic(() => import('@/components/tabs/marketing-tab').then(mod => mod.MarketingTab), {
+  loading: () => <div className="h-96 w-full animate-pulse rounded-2xl glass-card" />
+})
+
 import type { CompanyProfile, SaleRecord } from '@/lib/types'
 
 function Dashboard() {
@@ -123,7 +140,7 @@ function Dashboard() {
 
   const currency = profile?.currency ?? '$'
 
-  if (hydrating) {
+  if (hydrating && !profile) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
@@ -188,6 +205,7 @@ function Dashboard() {
               {activeTab === 'overview' && <OverviewTab data={data} currency={currency} />}
               {activeTab === 'regional' && <RegionalTab data={data} currency={currency} template={template} onAddSale={handleAddSale} />}
               {activeTab === 'products' && <ProductsTab data={data} currency={currency} />}
+              {activeTab === 'marketing' && <MarketingTab data={data} profile={profile} />}
               {activeTab === 'reps' && <RepsTab data={data} currency={currency} />}
               {activeTab === 'data' && (
                 <DataTab
